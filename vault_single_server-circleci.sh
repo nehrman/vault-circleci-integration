@@ -47,13 +47,13 @@ echo "# Ensure all pre requisites are met"
 echo "-----------------------------------"
 
 if [ ${os} == redhat ]
-then 
-sudo yum install -y jq unzip net-tools bzip2
-elif  [ ${os} == ubuntu ]
-then
-sudo apt-get install -y jq unzip net-tools bzip2
-else 
-brew install -y jq unzip bzip2
+    then 
+        sudo yum install -y jq unzip net-tools bzip2
+    elif  [ ${os} == ubuntu ]
+        then
+            sudo apt-get install -y jq unzip net-tools bzip2
+    else 
+        brew install -y jq unzip bzip2
 fi
 
 
@@ -61,35 +61,35 @@ echo "# Downloading Vault Binaries from Hashicorp Repository"
 echo "-------------------------------------------------------------"
 
 if [ ${vault_enterprise} == true ]
-then 
-curl -o ~/vault-${vault_version}+ent.zip  https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${vault_version}/vault-enterprise_${vault_version}%2Bent_${os_type}.zip
-else 
-curl -o ~/vault-${vault_version}.zip  https://releases.hashicorp.com/vault/${vault_version}/vault_${vault_version}_${os_type}.zip
+    then 
+        curl -o ~/vault-${vault_version}+ent.zip  https://s3-us-west-2.amazonaws.com/hc-enterprise-binaries/vault/ent/${vault_version}/vault-enterprise_${vault_version}%2Bent_${os_type}.zip
+    else 
+        curl -o ~/vault-${vault_version}.zip  https://releases.hashicorp.com/vault/${vault_version}/vault_${vault_version}_${os_type}.zip
 fi
 
 echo "# Unzip Vault package, apply appropriate permissions and move binary to correct directory"
 echo "------------------------------------------------------------------------------------------"
 
 if [ ${vault_enterprise} == true ]
-then 
-unzip ~/vault-${vault_version}+ent.zip
-else 
-unzip ~/vault-${vault_version}.zip
+    then 
+        unzip ~/vault-${vault_version}+ent.zip
+    else 
+        unzip ~/vault-${vault_version}.zip
 fi
 
 sudo chown root:root vault
 if [ ${os} == "redhat" ]
-then 
-sudo mv vault /usr/local/sbin
-else 
-sudo mv vault /usr/local/bin
+    then 
+        sudo mv vault /usr/local/sbin
+    else 
+        sudo mv vault /usr/local/bin
 fi
 
 if [ ${vault_enterprise} == true ]
-then 
-sudo rm ~/vault-${vault_version}+ent.zip
-else 
-sudo rm ~/vault-${vault_version}.zip
+    then 
+        sudo rm ~/vault-${vault_version}+ent.zip
+    else 
+        sudo rm ~/vault-${vault_version}.zip
 fi
 
 echo "# Create Vault User and Directories"
@@ -120,10 +120,10 @@ sudo setcap cap_ipc_lock=+ep $(readlink -f $(which vault))
 # Retrieve IP Address on Default Nic on the Host
 
 if [ ${os} == redhat ]
-then
-ip_address=$(ifconfig ${nic} | awk '/inet /{print substr($2, 1)}')
-else
-ip_address=$(ifconfig ${nic} | awk '/inet addr/{print substr($2, 6)}')
+    then
+        ip_address=$(ifconfig ${nic} | awk '/inet /{print substr($2, 1)}')
+    else
+        ip_address=$(ifconfig ${nic} | awk '/inet addr/{print substr($2, 6)}')
 fi
 
 echo "# Create Vault Server Configuration File"
@@ -131,8 +131,8 @@ echo "----------------------------------"
 
 # Generate VaultConfiguration file
 if [ ${vault_backend} == "consul" ]
-then
-sudo tee /etc/vault.d/config.hcl > /dev/null <<EOF
+    then
+        sudo tee /etc/vault.d/config.hcl > /dev/null <<EOF
 cluster_name = "${cluster_name}"
 
 storage "consul" {
@@ -148,9 +148,9 @@ api_addr = "${ip_address}:8200"
 cluster_address = "${ip_address}:8201"
 ui = true 
 EOF
-sudo chown -R vault:vault ${vault_path}
-else 
-sudo tee /etc/vault.d/config.hcl > /dev/null <<EOF
+        sudo chown -R vault:vault ${vault_path}
+    else 
+        sudo tee /etc/vault.d/config.hcl > /dev/null <<EOF
 cluster_name = "${cluster_name}"
 
 storage "file" {
@@ -166,7 +166,7 @@ api_addr = "http://${ip_address}:8200"
 cluster_address = "http://${ip_address}:8201"
 ui = true 
 EOF
-sudo chown -R vault:vault ${vault_path}
+        sudo chown -R vault:vault ${vault_path}
 fi
 
 # Register where Vault is deployed 
@@ -230,8 +230,8 @@ export VAULT_ADDR="http://${ip_address}:8200"
 export VAULT_TOKEN="${vault_root_token}"
 
 if [ ${vault_enterprise} == true ]
-then 
-vault write sys/license text="${license}"
+    then 
+        vault write sys/license text="${license}"
 fi
 
 echo "# Wait until Vault Server is responsive"
@@ -245,41 +245,41 @@ echo "# Download CircleCI Vault Plugin from Github"
 echo "--------------------------------------------"
 
 if [ ${os_type} == linux_amd64 ]
-then 
-wget -O ~/vault-circleci-auth-plugin.bz2 https://github.com/marcboudreau/vault-circleci-auth-plugin/releases/download/0.1.4/linux-amd64-vault-circleci-auth-plugin.bz2
-elif [ ${os_type} == darwin_amd64 ]
-then
-wget -O ~/vault-circleci-auth-plugin.bz2 https://github.com/marcboudreau/vault-circleci-auth-plugin/releases/download/0.1.4/darwin-amd64-vault-circleci-auth-plugin.bz2
-else
-echo "Your OS is not managed by the plugin"
+    then 
+        wget -O ~/vault-circleci-auth-plugin.bz2 https://github.com/marcboudreau/vault-circleci-auth-plugin/releases/download/0.1.4/linux-amd64-vault-circleci-auth-plugin.bz2
+    elif [ ${os_type} == darwin_amd64 ]
+        then
+            wget -O ~/vault-circleci-auth-plugin.bz2 https://github.com/marcboudreau/vault-circleci-auth-plugin/releases/download/0.1.4/darwin-amd64-vault-circleci-auth-plugin.bz2
+    else
+        echo "Your OS is not managed by the plugin"
 fi
 
 echo "# Decompress Plugin and move it in the right folder"
 echo "---------------------------------------------------"
 
 if [ ${os_type} != darwin_amd64 ]
-then 
-bzip2 -df ~/vault-circleci-auth-plugin.bz2
-sudo mv vault-circleci-auth-plugin ${vault_path}/plugins/
-sudo chown -R vault:vault ${vault_path}/plugins/
-sudo chmod +x ${vault_path}/plugins/vault-circleci-auth-plugin
-sudo setcap cap_ipc_lock=+ep ${vault_path}/plugins/vault-circleci-auth-plugin
+    then 
+        bzip2 -df ~/vault-circleci-auth-plugin.bz2
+        sudo mv vault-circleci-auth-plugin ${vault_path}/plugins/
+        sudo chown -R vault:vault ${vault_path}/plugins/
+        sudo chmod +x ${vault_path}/plugins/vault-circleci-auth-plugin
+        sudo setcap cap_ipc_lock=+ep ${vault_path}/plugins/vault-circleci-auth-plugin
 else 
-bzip2 -df ~/vault-circleci-auth-plugin.bz2
-sudo mv vault-circleci-auth-plugin /private${vault_path}/plugins/
-sudo chown -R vault:vault /private${vault_path}/plugins/
-sudo chmod +x /private${vault_path}/plugins/vault-circleci-auth-plugin
-sudo setcap cap_ipc_lock=+ep /private${vault_path}/plugins/vault-circleci-auth-plugin
+        bzip2 -df ~/vault-circleci-auth-plugin.bz2
+        sudo mv vault-circleci-auth-plugin /private${vault_path}/plugins/
+        sudo chown -R vault:vault /private${vault_path}/plugins/
+        sudo chmod +x /private${vault_path}/plugins/vault-circleci-auth-plugin
+        sudo setcap cap_ipc_lock=+ep /private${vault_path}/plugins/vault-circleci-auth-plugin
 fi
 
 echo "# Register Vault CircleCI Auth Plugin"
 echo "-------------------------------------"
 
 if [ ${os_type} != darwin_amd64 ]
-then 
-sha256=$(shasum -a 256 "${vault_path}"/plugins/vault-circleci-auth-plugin | awk '{print $1}')
-else 
-sha256=$(shasum -a 256 private"${vault_path}"/plugins/vault-circleci-auth-plugin | awk '{print $1}')
+    then 
+        sha256=$(shasum -a 256 "${vault_path}"/plugins/vault-circleci-auth-plugin | awk '{print $1}')
+    else 
+        sha256=$(shasum -a 256 private"${vault_path}"/plugins/vault-circleci-auth-plugin | awk '{print $1}')
 fi
 
 vault plugin register -sha256=${sha256} auth vault-circleci-auth-plugin
