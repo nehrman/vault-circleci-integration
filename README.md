@@ -12,12 +12,12 @@ This repo is not intented to support production deployment. The main objective i
 ## Pre Requisites
 
 You should :
-    - Have some knowledge on Vault and CircleCI
-    - Have access to CircleCI with a proper account
-    - be able to create a Token on CircleCI : https://circleci.com/docs/2.0/managing-api-tokens/
-    - have a project defined in CircleCI
-    - have a pipeline 
-    - have access to vault on port 8200 from CircleCI
+- Have some knowledge on Vault and CircleCI
+- Have access to CircleCI with a proper account
+- be able to create a Token on CircleCI : https://circleci.com/docs/2.0/managing-api-tokens/
+- have a project defined in CircleCI
+- have a pipeline 
+- have access to vault on port 8200 from CircleCI
 
 
 ## How to use it 
